@@ -24,85 +24,34 @@ from nomad.datamodel.metainfo.workflow import Workflow
 from nomad.parsing.file_parser import Quantity, TextParser
 from nomad.units import ureg as units
 
-from .metainfo.example import Model, Output, Simulation
 
 """
 This is a hello world style example for an example parser/converter.
 """
 
 
-def str_to_sites(string):
-    sym, pos = string.split('(')
-    pos = np.array(pos.split(')')[0].split(',')[:3], dtype=float)
-    return sym, pos
+from nomad.datamodel import EntryArchive
+from .metainfo.example import HDF5Metadata
+from .hdf5_parser import HDF5Reader
+from nomad.parsing.parser import Parser
 
-
-calculation_parser = TextParser(
-    quantities=[
-        Quantity(
-            'sites',
-            r'([A-Z]\([\d\.\, \-]+\))',
-            str_operation=str_to_sites,
-            repeats=True,
-        ),
-        Quantity(
-            Model.lattice,
-            r'(?:latice|cell): \((\d)\, (\d), (\d)\)\,?\s*\((\d)\, (\d), (\d)\)\,?\s*\((\d)\, (\d), (\d)\)\,?\s*',  # noqa
-            repeats=False,
-        ),
-        Quantity('energy', r'energy: (\d\.\d+)'),
-        Quantity(
-            'magic_source',
-            r'done with magic source\s*\*{3}\s*\*{3}\s*[^\d]*(\d+)',
-            repeats=False,
-        ),
-    ]
-)
-
-mainfile_parser = TextParser(
-    quantities=[
-        Quantity('date', r'(\d\d\d\d\/\d\d\/\d\d)', repeats=False),
-        Quantity('program_version', r'super\_code\s*v(\d+)\s*', repeats=False),
-        Quantity(
-            'calculation',
-            r'\s*system \d+([\s\S]+?energy: [\d\.]+)([\s\S]+\*\*\*)*',
-            sub_parser=calculation_parser,
-            repeats=True,
-        ),
-    ]
-)
-
-
-class ExampleParser:
-    def parse(self, mainfile: str, archive: EntryArchive, logger):
-        # Log a hello world, just to get us started. TODO remove from an actual parser.
-        logger.info('Hello World')
-
-        # Use the previously defined parsers on the given mainfile
-        mainfile_parser.mainfile = mainfile
-        mainfile_parser.parse()
-
-        simulation = Simulation(
-            code_name='super_code', code_version=mainfile_parser.get('program_version')
+class HDF5Parser(Parser):
+    def __init__(self):
+        super().__init__(
+            name='parser_hdf5',
+            code_name='HDF5 Example Parser',
+            code_homepage='https://example.org/hdf5parser',
+            domain='data',
         )
-        date = datetime.datetime.strptime(mainfile_parser.date, '%Y/%m/%d')
-        simulation.date = date
 
-        for calculation in mainfile_parser.get('calculation', []):
-            model = Model()
+    def parse(self, mainfile: str, archive: EntryArchive, logger):
+        reader = HDF5Reader(mainfile)
+        data = reader.extract_metadata()
 
-            model.lattice = calculation.get('lattice_vectors')
-            sites = calculation.get('sites')
-            model.labels = [site[0] for site in sites]
-            model.positions = [site[1] for site in sites]
-            simulation.model.append(model)
+        # Example: store something in archive
+        section = HDF5Metadata()
+        section.method = 'HDF5 metadata extraction'
+        section.comments = str(data.get('some_group', {}).get('value', 'No value'))
 
-            output = Output()
-            output.model = model
-            output.energy = calculation.get('energy') * units.eV
-            magic_source = calculation.get('magic_source')
-            if magic_source is not None:
-                archive.workflow2 = Workflow(x_example_magic_value=magic_source)
-            simulation.output.append(output)
-        # put the simulation section into archive data
-        archive.data = simulation
+        archive.metadata.entry_name = 'HDF5 extracted entry'
+        archive.run = [section]

@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = 'exampleparser'
+name = 'HDF5Parser'
 version = '1.0'
 description = 'An example parser for NOMAD.'
 readme = "README.md"

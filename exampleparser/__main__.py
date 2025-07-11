@@ -23,10 +23,10 @@ import sys
 from nomad.datamodel import EntryArchive
 from nomad.utils import configure_logging
 
-from exampleparser import ExampleParser
+from exampleparser import HDF5Parser
 
 if __name__ == '__main__':
     configure_logging(console_log_level=logging.DEBUG)
     archive = EntryArchive()
-    ExampleParser().parse(sys.argv[1], archive, logging)
+    HDF5Parser().parse(sys.argv[1], archive, logging)
     json.dump(archive.m_to_dict(), sys.stdout, indent=2)
