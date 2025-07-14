@@ -11,6 +11,9 @@ authors = [{ name = "The NOMAD Authors" }]
 license = { text = "Apache-2.0" }
 dependencies = ["nomad-lab>=1.2.0"]
 
+[project.entry-points."nomad.parsers"]
+parser_hdf5 = "exampleparser.parser:HDF5Parser"
+
 [project.urls]
 homepage = "https://github.com/nomad-coe/nomad-parser-example"
 
