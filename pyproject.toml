@@ -100,9 +100,15 @@ skip-magic-trailing-comma = false
 # Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
 
+[tool.setuptools]
+package-dir = {"" = "."}
+
 [tool.setuptools.packages.find]
 include = ["exampleparser*"]
 
 [tool.setuptools.package-data]
-nomadschemaexample = ['*/metadata.yaml', '*/README.md']
-"exampleparser" = ["*/parser-hdf5.nomad.yaml"]
+"exampleparser" = ["parser-hdf5.nomad.yaml"]
+
+[tool.setuptools.packages.find]
+include = ["exampleparser*"]
+
