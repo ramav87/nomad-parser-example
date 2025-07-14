@@ -55,6 +55,7 @@ from nomad.datamodel import EntryArchive, EntryMetadata
 
 class HDF5Parser():
     def parse(self, mainfile: str, archive: EntryArchive, logger):
+        print('We are inside parse()')
         logger.info(f"🔥 HDF5Parser invoked on file: {mainfile}")
         from .hdf5_parser import HDF5Reader
         from .metainfo.example import HDF5Metadata
