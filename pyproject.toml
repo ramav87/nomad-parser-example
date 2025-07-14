@@ -14,9 +14,6 @@ dependencies = ["nomad-lab>=1.2.0"]
 [project.entry-points."nomad.parsers"]
 parser_hdf5 = "exampleparser.parser:HDF5Parser"
 
-[tool.setuptools.package-data]
-"exampleparser" = ["../parser-hdf5.nomad.yaml"]
-
 [project.urls]
 homepage = "https://github.com/nomad-coe/nomad-parser-example"
 
@@ -108,3 +105,4 @@ include = ["exampleparser*"]
 
 [tool.setuptools.package-data]
 nomadschemaexample = ['*/metadata.yaml', '*/README.md']
+"exampleparser" = ["*/parser-hdf5.nomad.yaml"]
