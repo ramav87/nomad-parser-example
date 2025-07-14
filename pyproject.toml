@@ -109,6 +109,4 @@ include = ["exampleparser*"]
 [tool.setuptools.package-data]
 "exampleparser" = ["parser-hdf5.nomad.yaml"]
 
-[tool.setuptools.packages.find]
-include = ["exampleparser*"]
 
