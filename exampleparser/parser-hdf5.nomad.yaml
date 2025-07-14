@@ -2,4 +2,4 @@ parser:
   name: parser_hdf5
   description: NOMAD parser for HDF5 files
   code_name: HDF5 Example Parser
-  mainfile_name_re: .*\.sidh5$
+  mainfile_name_re: ".*\\.sidh5$"
