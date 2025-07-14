@@ -33,16 +33,9 @@ This is a hello world style example for an example parser/converter.
 from nomad.datamodel import EntryArchive
 from .metainfo.example import HDF5Metadata
 from .hdf5_parser import HDF5Reader
-from nomad.parsing.parser import Parser
 
-class HDF5Parser(Parser):
-    def __init__(self):
-        super().__init__(
-            name='parser_hdf5',
-            code_name='HDF5 Example Parser',
-            code_homepage='https://example.org/hdf5parser',
-            domain='data',
-        )
+"""
+class HDF5Parser():
 
     def parse(self, mainfile: str, archive: EntryArchive, logger):
         reader = HDF5Reader(mainfile)
@@ -55,3 +48,67 @@ class HDF5Parser(Parser):
 
         archive.metadata.entry_name = 'HDF5 extracted entry'
         archive.run = [section]
+
+"""
+
+from nomad.datamodel import EntryArchive, EntryMetadata
+
+class HDF5Parser():
+    def parse(self, mainfile: str, archive: EntryArchive, logger):
+        from .hdf5_parser import HDF5Reader
+        from .metainfo.example import HDF5Metadata
+
+        reader = HDF5Reader(mainfile)
+        data = reader.extract_metadata()
+
+        section = HDF5Metadata()
+        section.file_structure = str(data)
+        section.temperature = float(
+            data.get('experiment', {}).get('temperature', {}).get('value', 0.0)
+        )
+
+        # ✅ Initialize metadata if needed
+        if archive.metadata is None:
+            from nomad.datamodel import EntryMetadata
+            archive.metadata = EntryMetadata()
+
+        archive.metadata.entry_name = 'HDF5 extracted entry'
+        archive.results = section
+
+
+"""
+class ExampleParser:
+    def parse(self, mainfile: str, archive: EntryArchive, logger):
+        # Log a hello world, just to get us started. TODO remove from an actual parser.
+        logger.info('Hello World')
+
+        # Use the previously defined parsers on the given mainfile
+        mainfile_parser.mainfile = mainfile
+        mainfile_parser.parse()
+
+        simulation = Simulation(
+            code_name='super_code', code_version=mainfile_parser.get('program_version')
+        )
+        date = datetime.datetime.strptime(mainfile_parser.date, '%Y/%m/%d')
+        simulation.date = date
+
+        for calculation in mainfile_parser.get('calculation', []):
+            model = Model()
+
+            model.lattice = calculation.get('lattice_vectors')
+            sites = calculation.get('sites')
+            model.labels = [site[0] for site in sites]
+            model.positions = [site[1] for site in sites]
+            simulation.model.append(model)
+
+            output = Output()
+            output.model = model
+            output.energy = calculation.get('energy') * units.eV
+            magic_source = calculation.get('magic_source')
+            if magic_source is not None:
+                archive.workflow2 = Workflow(x_example_magic_value=magic_source)
+            simulation.output.append(output)
+        # put the simulation section into archive data
+        archive.data = simulation
+
+"""

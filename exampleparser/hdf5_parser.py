@@ -15,8 +15,8 @@ class HDF5Reader:
                     out[key] = {}
                     _walk(item, out[key])
             elif isinstance(obj, h5py.Dataset):
-                out['value'] = item[()]
-                out['attrs'] = dict(item.attrs)
+                out['value'] = obj[()]              # ✅ Use obj, not item
+                out['attrs'] = dict(obj.attrs)      # ✅ Same here
 
         with h5py.File(self.file_path, 'r') as f:
             _walk(f[group_path], metadata)
