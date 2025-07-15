@@ -69,7 +69,7 @@ class HDF5Parser():
             data.get('experiment', {}).get('temperature', {}).get('value', 0.0)
         )
 
-        # ✅ Initialize metadata if needed
+        # Initialize metadata 
         if archive.metadata is None:
             from nomad.datamodel import EntryMetadata
             archive.metadata = EntryMetadata()
